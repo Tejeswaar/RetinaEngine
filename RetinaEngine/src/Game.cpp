@@ -5,6 +5,7 @@
 Game::Game()
 {
 	std::cout << "Game Constructor Called!" << std::endl;
+	isRunning = false;
 }
 
 Game::~Game()
@@ -49,21 +50,41 @@ void Game::Initialize()
 		return;
 	}
 
+	isRunning = true;
 }
 
 void Game::Run()
 {
-	/*while (true)
+	while (isRunning)
 	{
 		ProcessInput();
 		Update();
 		Render();
-	}*/
+	}
 }
 
 void Game::ProcessInput()
 {
+	SDL_Event sdlEvent;
+	while (SDL_PollEvent(&sdlEvent))
+	{
+		switch (sdlEvent.type)
+		{
 
+		case SDL_QUIT:
+
+			isRunning = false;
+			break;
+
+		case SDL_KEYDOWN:
+
+			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE)
+			{
+				isRunning = false;
+			}
+			break;
+		}
+	}
 }
 
 void Game::Update ()
@@ -73,7 +94,15 @@ void Game::Update ()
 
 void Game::Render()
 {
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
+	SDL_RenderClear(renderer);
+
+
+
+
+
+	SDL_RenderPresent(renderer);
 }
 
 void Game::Destroy()
