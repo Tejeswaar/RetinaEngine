@@ -21,12 +21,17 @@ void Game::Initialize()
 		return;
 	}
 
+	SDL_DisplayMode displayMode;
+	SDL_GetCurrentDisplayMode(0, &displayMode);
+	windowWidth = displayMode.w;
+	windowHight = displayMode.h;
+
 	window = SDL_CreateWindow (
 			"Retina Engine",
 			SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED,
-			800,
-			600,
+			windowWidth,
+			windowHight,
 			SDL_WINDOW_SHOWN );
 
 	if (!window)
@@ -50,7 +55,10 @@ void Game::Initialize()
 		return;
 	}
 
+	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
 	isRunning = true;
+
 }
 
 void Game::Run()
