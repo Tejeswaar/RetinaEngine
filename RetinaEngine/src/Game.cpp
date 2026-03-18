@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <SDL.h>
+#include <SDL_image.h>
 #include <iostream>
 
 Game::Game()
@@ -47,7 +48,7 @@ void Game::Initialize()
 	// 2nd param :- Index of the rendering driver to initialize (eg: -1 in this case picks the defualt display driver to display),
 	// 3rd parm :- and flags for the renderer
 
-	renderer = SDL_CreateRenderer(window, -1, 0);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	if (!renderer)
 	{
@@ -61,8 +62,15 @@ void Game::Initialize()
 
 }
 
+void Game::Setup()
+{
+
+}
+
 void Game::Run()
 {
+	Setup();
+
 	while (isRunning)
 	{
 		ProcessInput();
@@ -102,12 +110,19 @@ void Game::Update ()
 
 void Game::Render()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 
 	SDL_RenderClear(renderer);
+	/*SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	SDL_Rect rect = { 10 , 10, 100, 100 };
+	SDL_RenderFillRect(renderer, &rect);*/
 
-
-
+	SDL_Surface* surface = IMG_Load("assets/images/tank-tiger-right.png");
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+	SDL_Rect destRect = { 100, 100, 64, 64 };
+	SDL_RenderCopy(renderer, texture, NULL, &destRect);
+	SDL_DestroyTexture(texture);
 
 
 	SDL_RenderPresent(renderer);
