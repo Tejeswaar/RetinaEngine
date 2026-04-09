@@ -1,6 +1,8 @@
 #include "Game.h"
 #include <SDL.h>
 #include <SDL_image.h>
+#include <glm/glm.hpp>
+#include <SDL_timer.h>
 #include <iostream>
 
 Game::Game()
@@ -38,7 +40,6 @@ void Game::Initialize()
 	if (!window)
 	{
 		std::cerr << "SDL_Window Error: " << SDL_GetError() << std::endl;
-		//SDL_Quit();
 		return;
 	}
 
@@ -62,22 +63,8 @@ void Game::Initialize()
 
 }
 
-void Game::Setup()
-{
 
-}
 
-void Game::Run()
-{
-	Setup();
-
-	while (isRunning)
-	{
-		ProcessInput();
-		Update();
-		Render();
-	}
-}
 
 void Game::ProcessInput()
 {
@@ -102,10 +89,26 @@ void Game::ProcessInput()
 		}
 	}
 }
+glm::vec2 PlayerPosition;
+glm::vec2 PlayerVelocity;
+
+void Game::Setup()
+{
+	PlayerPosition = glm::vec2(100.0f, 100.0f);
+	PlayerVelocity = glm::vec2(1.0f, 1.0f);
+}
 
 void Game::Update ()
 {
 
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), millisecsPreviousFrame + MILLISECPERFRAME));
+	
+	millisecsPreviousFrame = SDL_GetTicks();
+
+	int millisecsPreviousFrame = SDL_GetTicks();
+
+	PlayerPosition.x += PlayerVelocity.x;
+	PlayerPosition.y += PlayerVelocity.y;
 }
 
 void Game::Render()
@@ -120,12 +123,29 @@ void Game::Render()
 	SDL_Surface* surface = IMG_Load("assets/images/tank-tiger-right.png");
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
-	SDL_Rect destRect = { 100, 100, 64, 64 };
+	SDL_Rect destRect = { 
+		static_cast<int>(PlayerPosition.x),
+		static_cast<int>(PlayerPosition.y),
+		64,
+		64 
+			};
 	SDL_RenderCopy(renderer, texture, NULL, &destRect);
 	SDL_DestroyTexture(texture);
 
 
 	SDL_RenderPresent(renderer);
+}
+
+void Game::Run()
+{
+	Setup();
+
+	while (isRunning)
+	{
+		ProcessInput();
+		Update();
+		Render();
+	}
 }
 
 void Game::Destroy()
